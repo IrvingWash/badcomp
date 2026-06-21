@@ -5,6 +5,7 @@
     TEMP_ALLOCATOR_OVERWRITE_MEMORY = DEBUG,
 );
 String :: #import "String";
+U :: #import,file "unshittifier.jai";
 
 Config :: struct {
     source:               string;
@@ -12,7 +13,6 @@ Config :: struct {
     should_remove_source: bool;
     should_help:          bool;
 }
-
 
 main :: () {
     #if DEBUG {
@@ -33,7 +33,11 @@ main :: () {
         return;
     }
 
-    print("%\n", config);
+    error = U.unshittify(config.source, config.destination);
+    if error {
+        print(error, to_standard_error = true);
+        exit(1);
+    }
 }
 
 help_people :: () {
