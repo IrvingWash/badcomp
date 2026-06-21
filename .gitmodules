@@ -1,0 +1,3 @@
+[submodule "modules/jaid3"]
+	path = modules/jaid3
+	url = git@github.com:IrvingWash/jaid3.git
