@@ -51,28 +51,20 @@ main :: () {
 
 remove_source_interactively :: (source_path: string) -> error: string {
     agreed_for_deletion: bool;
-
-    read_line_posix :: () -> string {
-        POSIX  :: #import "POSIX";
-
-        buffer: [4096]u8;
-        bytes_read := POSIX.read(POSIX.STDIN_FILENO, buffer.data, buffer.count - 1);
-
-        return to_string(buffer.data, bytes_read,, temp);
-    }
-
     while true {
         print("Going to delete '%' (the source directory you passed), you sure? y/n\n", source_path);
 
         reply: string;
 
-        #if OS == {
-            case .MACOS;
-                reply = read_line_posix();
-            case .LINUX;
-                reply = read_line_posix();
-            case;
-                assert("We don't support your OS, delete the source directory yourself and think about your life choices while doing it");
+        #if OS_IS_UNIX {
+            POSIX  :: #import "POSIX";
+
+            buffer: [4096]u8;
+            bytes_read := POSIX.read(POSIX.STDIN_FILENO, buffer.data, buffer.count - 1);
+
+            reply = to_string(buffer.data, bytes_read,, temp);
+        } else {
+            return "We don't support your OS, delete the source directory yourself and think about your life choices while doing it";
         }
 
         if String.trim(reply) == {
