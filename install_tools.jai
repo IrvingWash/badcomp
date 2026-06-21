@@ -15,8 +15,6 @@ HOOKS_DESTINATION_ABSOLUTE_PATH :: #run sprint("%.git/hooks", #filepath);
     });
 
     install_git_hooks();
-
-    reset_temporary_storage();
 }
 
 install_git_hooks :: () {

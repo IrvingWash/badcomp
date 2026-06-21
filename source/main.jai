@@ -7,6 +7,7 @@
 String :: #import      "String";
 U      :: #import,file "unshittifier.jai";
 CLI    :: #import,file "cli.jai";
+GUI    :: #import,file "gui.jai";
 
 Config :: struct {
     source:               string;
@@ -20,8 +21,6 @@ main :: () {
     #if DEBUG {
         defer report_memory_leaks();
     }
-
-    defer reset_temporary_storage();
 
     error, config := make_config();
     if error {
@@ -51,9 +50,8 @@ main :: () {
         }
 
         return;
-    }
-
-    if config.use_gui {
+    } else {
+        GUI.do_gui();
     }
 }
 

@@ -27,8 +27,6 @@ EXECUTABLE_NAME :: "badcomp";
 BUILD_ENTRY_FILE :: #run tprint("%source/main.jai", #filepath);
 
 #run,stallable {
-    defer reset_temporary_storage();
-
     set_build_options_dc({ do_output = false });
 
     build_options_dc := get_build_options();
