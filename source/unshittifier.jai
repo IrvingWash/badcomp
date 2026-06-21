@@ -68,6 +68,15 @@ unshittify :: (source_path: string, destination_path: string) -> error: string {
     return "";
 }
 
+delete_directory :: (path: string) -> string {
+    ok := File.delete_directory(path);
+    if !ok {
+        return tprint("Failed to delete the source directory %\n", path);
+    }
+
+    return "";
+}
+
 
 
 #scope_file

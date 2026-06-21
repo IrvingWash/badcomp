@@ -50,9 +50,9 @@ remove_source_interactively :: (source_path: string) -> error: string {
     }
 
     if agreed_for_deletion {
-        ok := File.delete_directory(source_path);
-        if !ok {
-            return tprint("Failed to delete the source directory %\n", source_path);
+        error := U.delete_directory(source_path);
+        if error {
+            return error;
         }
     }
 
@@ -81,4 +81,4 @@ DONE;
 
 #import "Basic";
 String :: #import "String";
-File   :: #import      "File";
+U      :: #import,file "unshittifier.jai";
