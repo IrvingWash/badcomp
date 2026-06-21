@@ -1,6 +1,6 @@
 # badcomp
 
-This app changes Bandcamp album's file """structure""" into a nice format.
+This app changes Bandcamp album's file so-called """structure""" into a nice format.
 
 How it looks by default:
 ```
@@ -32,3 +32,4 @@ CASTEVET
 -s, --source        - source directory, i.e. unzipped Bandcamp album
 -d, --destination   - destination directory, for example '~/Music'. The artist name directory is created automatically, and it works fine if you already have a directory with that artist's name
 -r, --remove-source - delete the source directory after completion.
+-h, --help          - print help which is probably more up to date that this

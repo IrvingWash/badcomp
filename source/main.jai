@@ -5,6 +5,7 @@
     TEMP_ALLOCATOR_OVERWRITE_MEMORY = DEBUG,
 );
 String :: #import "String";
+File   :: #import "File";
 U :: #import,file "unshittifier.jai";
 
 Config :: struct {
@@ -23,7 +24,7 @@ main :: () {
 
     error, config := make_config();
     if error {
-        print(error, to_standard_error = true);
+        print("%\n", error, to_standard_error = true);
         exit(1);
     }
 
@@ -35,9 +36,63 @@ main :: () {
 
     error = U.unshittify(config.source, config.destination);
     if error {
-        print(error, to_standard_error = true);
+        print("%\n", error, to_standard_error = true);
         exit(1);
     }
+
+    if config.should_remove_source {
+        error = remove_source_interactively(config.source);
+        if error {
+            print("%\n", error, to_standard_error = true);
+            exit(1);
+        }
+    }
+}
+
+remove_source_interactively :: (source_path: string) -> error: string {
+    agreed_for_deletion: bool;
+
+    read_line_posix :: () -> string {
+        POSIX  :: #import "POSIX";
+
+        buffer: [512]u8;
+        bytes_read := POSIX.read(POSIX.STDIN_FILENO, buffer.data, buffer.count - 1);
+
+        return to_string(buffer.data, bytes_read,, temp);
+    }
+
+    while true {
+        print("Going to delete '%' (the source directory you passed), you sure? y/n\n", source_path);
+
+        reply: string;
+
+        #if OS == {
+            case .MACOS;
+                reply = read_line_posix();
+            case .LINUX;
+                reply = read_line_posix();
+            case;
+                assert("We don't support your OS, delete the source directory yourself and think about your life choices while doing it");
+        }
+
+        if String.trim(reply) == {
+            case "y";
+                agreed_for_deletion = true;
+                break;
+            case "n";
+                agreed_for_deletion = false;
+                break;
+        }
+    }
+
+    if agreed_for_deletion {
+        ok := File.delete_directory(source_path);
+        if !ok {
+            return tprint("Failed to delete the source directory %\n", source_path);
+        }
+    }
+
+    return "";
 }
 
 help_people :: () {
@@ -125,11 +180,11 @@ make_config :: () -> error: string, Config {
         return tprint("Encountered some unknown arguments: %, stop fatfingering", unknown_arguments), config;
     }
 
-    if !config.source {
+    if !config.source && !config.should_help {
         return "Source directory was not provided, what were you thinking?", config;
     }
 
-    if !config.destination {
+    if !config.destination && !config.should_help {
         return "Destination directory was not provided. Sorry, we don't know what to do in such a case", config;
     }
 
