@@ -64,7 +64,30 @@ remove_source_interactively :: (source_path: string) -> error: string {
 
             reply = to_string(buffer.data, bytes_read,, temp);
         } else {
-            return "We don't support your OS, delete the source directory yourself and think about your life choices while doing it";
+            #if OS == {
+                case .WINDOWS;
+                    Win :: #import "Windows";
+
+                    kernel32 :: #system_library "kernel32";
+
+                    ReadConsoleA  :: (
+                        hConsoleInput:        Win.HANDLE,
+                        lpBuffer:             *u8,
+                        nNumberOfCharsToRead: Win.DWORD,
+                        lpNumberOfCharsRead:  *s32,
+                        lpInputControl :=     *void,
+                    ) -> bool #foreign kernel32;
+
+                    stdin := Win.GetStdHandle(Win.STD_INPUT_HANDLE);
+
+                    buffer: [1024]u8;
+                    bytes_read: s32;
+                    ok := ReadConsoleA(stdin, buffer.data, buffer.count, *bytes_read);
+
+                    reply = to_string(buffer.data, bytes_read,, temp);
+                case;
+                    return "We don't support your OS, delete the source directory yourself and think about your life choices while doing it";
+            }
         }
 
         if String.trim(reply) == {
@@ -137,7 +160,7 @@ make_config :: () -> error: string, Config {
 
                     continue;
                 }
-                
+
                 return "A directory path must follow the --source flag", config;
 
             case "--destination";
@@ -155,7 +178,7 @@ make_config :: () -> error: string, Config {
 
                     continue;
                 }
-                
+
                 return "A directory path must follow the --destination flag", config;
 
             case "--remove-source";
