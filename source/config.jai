@@ -9,7 +9,14 @@ make_config :: () -> error: string, Config {
 
     arguments := get_command_line_arguments();
 
+    unknown_arguments: [..]string;
+    unknown_arguments.allocator = temp;
+
     for argument: arguments {
+        if it_index == 0 {
+            continue; // We want to skip the first argument which is the path to the app
+        }
+
         if argument == {
             case "--source"; #through;
             case "-s";
@@ -46,7 +53,13 @@ make_config :: () -> error: string, Config {
             case "--remove-source"; #through;
             case "-r";
                 config.should_remove_source = true;
+            case;
+                array_add(*unknown_arguments, argument);
         }
+    }
+
+    if unknown_arguments.count > 0 {
+        return tprint("Encountered some unknown arguments: %, stop fatfingering", unknown_arguments), config;
     }
 
     if !config.source {
