@@ -55,7 +55,7 @@ remove_source_interactively :: (source_path: string) -> error: string {
     read_line_posix :: () -> string {
         POSIX  :: #import "POSIX";
 
-        buffer: [512]u8;
+        buffer: [4096]u8;
         bytes_read := POSIX.read(POSIX.STDIN_FILENO, buffer.data, buffer.count - 1);
 
         return to_string(buffer.data, bytes_read,, temp);
